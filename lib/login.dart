@@ -1,5 +1,7 @@
+import 'package:coffeehouse/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -11,6 +13,13 @@ class Login extends StatefulWidget {
 const double logoSize = 300.0;
 
 class _LoginState extends State<Login> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  void Function()? signIn(String email, String password) {
+    context.read<AuthService>().signIn(email, password);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,6 +51,7 @@ class _LoginState extends State<Login> {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: TextFormField(
+              controller: emailController,
               decoration: InputDecoration(
                 labelText: "Email",
                 labelStyle: const TextStyle(color: Colors.white),
@@ -58,10 +68,7 @@ class _LoginState extends State<Login> {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: TextFormField(
-              // decoration: const InputDecoration(
-              //   border: UnderlineInputBorder(),
-              //   labelText: 'Email',
-              // ),
+              controller: passwordController,
               decoration: InputDecoration(
                 labelText: "Password",
                 labelStyle: const TextStyle(color: Colors.white),
@@ -79,10 +86,11 @@ class _LoginState extends State<Login> {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
             child: ElevatedButton(
-                onPressed: () {},
+                onPressed: signIn(emailController.text.trim(),
+                    passwordController.text.trim()),
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
-                    primary: const Color(0xFF865243),
+                    primary: const Color(0xFFFF3700),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0)),
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10)),

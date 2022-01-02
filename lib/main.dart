@@ -1,8 +1,13 @@
+import 'package:coffeehouse/auth_service.dart';
+import 'package:coffeehouse/chat.dart';
 import 'package:coffeehouse/login.dart';
 import 'package:coffeehouse/navbar.dart';
+import 'package:coffeehouse/post_list.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'post.dart';
+import 'package:provider/provider.dart';
+// import 'post.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,15 +30,25 @@ class _MojAppState extends State<MojApp> {
 
   @override
   Widget build(BuildContext) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-              centerTitle: true,
-            ),
-            body: const Center(child: Login()),
-            bottomNavigationBar: const NavBar(),
-            backgroundColor: bgColor));
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+            create: (context) => context.read<AuthService>().authStateChanges,
+            initialData: null)
+      ],
+      child: MaterialApp(
+          home: Scaffold(
+              appBar: AppBar(
+                title: Text(title),
+                centerTitle: true,
+              ),
+              body: const Center(child: AuthenticationWrapper()),
+              bottomNavigationBar: const NavBar(),
+              backgroundColor: bgColor)),
+    );
   }
 }
 
@@ -42,6 +57,11 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final firebaseuser = context.watch<User?>();
+    if (firebaseuser != null) {
+      // firebaseuser.updateDisplayName("User1");
+      return const Chat();
+    }
+    return const Login();
   }
 }
