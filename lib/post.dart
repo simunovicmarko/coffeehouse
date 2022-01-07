@@ -101,34 +101,57 @@ class _PostState extends State<Post> {
 }
 
 class Ratings extends StatefulWidget {
-  const Ratings({
-    Key? key,
-    required this.rating,
-  }) : super(key: key);
+  const Ratings(
+      {Key? key,
+      this.rating = 1,
+      this.beanSize = 30,
+      this.widtFactor = 0.6,
+      this.isButton = false})
+      : super(key: key);
 
   final int rating;
-
+  final double beanSize;
+  final double widtFactor;
+  final bool isButton;
   @override
   State<Ratings> createState() => _RatingsState();
 }
 
 class _RatingsState extends State<Ratings> {
-  double beanSize = 30;
+  // double beanSize = 30;
   double ratingMargin = 10;
+  int rating = 3;
 
   var beanChildren = <Widget>[];
 
-  void getBeans() {
+  void getBeans({void Function()? onPressed}) {
+    // rating = rating != widget.rating ? widget.rating : rating;
     beanChildren.clear();
     for (var i = 0; i < 5; i++) {
       beanChildren.add(
         SizedBox(
-          child: SvgPicture.asset(
-            'assets/score-bean.svg',
-            color: i < widget.rating ? Colors.black : Colors.white,
-          ),
-          width: beanSize,
-          height: beanSize,
+          child: widget.isButton
+              ? IconButton(
+                  key: ValueKey(i),
+                  onPressed: () {
+                    setState(() {
+                      rating = i;
+                    });
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/score-bean.svg',
+                    color: i <= rating ? Colors.black : Colors.white,
+                    width: widget.beanSize,
+                    height: widget.beanSize,
+                  ),
+                  iconSize: widget.beanSize,
+                )
+              : SvgPicture.asset(
+                  'assets/score-bean.svg',
+                  color: i < rating ? Colors.black : Colors.white,
+                  width: widget.beanSize,
+                  height: widget.beanSize,
+                ),
         ),
       );
     }
@@ -141,10 +164,14 @@ class _RatingsState extends State<Ratings> {
       margin: EdgeInsets.all(ratingMargin),
       alignment: Alignment.bottomLeft,
       child: FractionallySizedBox(
-        widthFactor: 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: beanChildren,
+        widthFactor: widget.widtFactor,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: beanChildren,
+            ),
+          ],
         ),
       ),
     );

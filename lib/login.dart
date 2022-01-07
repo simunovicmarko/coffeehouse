@@ -86,8 +86,10 @@ class _LoginState extends State<Login> {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
             child: ElevatedButton(
-                onPressed: signIn(emailController.text.trim(),
-                    passwordController.text.trim()),
+                onPressed: () {
+                  signIn(emailController.text.trim(),
+                      passwordController.text.trim());
+                },
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
                     primary: const Color(0xFFFF3700),
