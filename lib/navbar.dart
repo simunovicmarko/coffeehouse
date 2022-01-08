@@ -1,8 +1,12 @@
+import 'package:coffeehouse/addPost.dart';
+import 'package:coffeehouse/post_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NavBar extends StatefulWidget {
-  const NavBar({Key? key}) : super(key: key);
+  const NavBar({Key? key, required this.setWidget}) : super(key: key);
+
+  final void Function(Widget) setWidget;
 
   @override
   _NavBarState createState() => _NavBarState();
@@ -20,29 +24,35 @@ class _NavBarState extends State<NavBar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              child: SvgPicture.asset(
+            IconButton(
+              onPressed: () {
+                widget.setWidget(const PostList());
+              },
+              icon: SvgPicture.asset(
                 'assets/House.svg',
                 color: Colors.white,
               ),
-              width: 50,
-              height: 50,
+              iconSize: 50,
             ),
-            SizedBox(
-              child: SvgPicture.asset(
+            IconButton(
+              onPressed: () {
+                widget.setWidget(const AddPost());
+              },
+              icon: SvgPicture.asset(
                 'assets/AddPicture.svg',
                 color: Colors.white,
               ),
-              width: 50,
-              height: 50,
+              iconSize: 50,
             ),
-            SizedBox(
-              child: SvgPicture.asset(
+            IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset(
                 'assets/PaperPlane.svg',
                 color: Colors.white,
+                width: 50.0,
+                height: 50.0,
               ),
-              width: 50,
-              height: 50,
+              iconSize: 50.0,
             ),
           ],
         ),

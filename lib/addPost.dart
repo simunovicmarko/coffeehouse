@@ -32,15 +32,18 @@ class _AddPostState extends State<AddPost> {
 
   void addPostToFirebase() {
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    Map<String, dynamic> postMap = {
-      "userId": uid,
-      "title": titleController.text,
-      "description": descriptionController.text,
-      "location": locationController.text,
-      "rating": rating,
-      "imageLink": imageLink
-    };
-    FirebaseFirestore.instance.collection('Posts').add(postMap);
+
+    if (titleController.text.isNotEmpty && imageLink.isNotEmpty) {
+      Map<String, dynamic> postMap = {
+        "userId": uid,
+        "title": titleController.text,
+        "description": descriptionController.text,
+        "location": locationController.text,
+        "rating": rating,
+        "imageLink": imageLink
+      };
+      FirebaseFirestore.instance.collection('Posts').add(postMap);
+    }
   }
 
   Future<bool> checkPermissions() async {
