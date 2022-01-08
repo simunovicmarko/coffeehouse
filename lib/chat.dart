@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffeehouse/messageRow.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -12,7 +13,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   String recipientUUID = "qsIMPBjaV6PSU40Lm77izWlNgU72";
-  String senderUUID = "BUEoPiryR3Nrm8Am6o5V7yHUpI33";
+  String senderUUID = FirebaseAuth.instance.currentUser!.uid;
 
   String messageContent =
       "Lorem ipsum neiofsbflsfgasfmčgfčgdsfničsfgdneiofsbflsfgasfmčgfčgdsfničsfgd";
@@ -24,40 +25,33 @@ class _ChatState extends State<Chat> {
     return Stack(children: [
       Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 60),
-          child:
-              // ListView(
-              //   reverse: true,
-              //   children: [
-              //     // SenderMessageRow(messageContent: messageContent),
-
-              StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('Chat')
-                      .doc("P1Fqkr9SeyApBdVqV0hn")
-                      .collection('Messages')
-                      .orderBy('id', descending: true)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    return ListView(
-                      reverse: true,
-                      children: snapshot.data != null &&
-                              snapshot.data!.docs.isNotEmpty
-                          ? snapshot.data!.docs.map((message) {
-                              return Center(
-                                  child: ListTile(
-                                title:
-                                    message['SentBy'].toString() == senderUUID
-                                        ? SenderMessageRow(
-                                            key: Key(randomAlphaNumeric(12)),
-                                            messageContent: message["Message"])
-                                        : RecipientMessageRow(
-                                            key: Key(randomAlphaNumeric(12)),
-                                            messageContent: message["Message"]),
-                              ));
-                            }).toList()
-                          : [SenderMessageRow(messageContent: "Ne obstaja")],
-                    );
-                  })
+          child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('Chat')
+                  .doc("Pp3cNzZJ9TebUWrqGmkj")
+                  .collection('Messages')
+                  .orderBy('id', descending: true)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                return ListView(
+                  reverse: true,
+                  children: snapshot.data != null &&
+                          snapshot.data!.docs.isNotEmpty
+                      ? snapshot.data!.docs.map((message) {
+                          return Center(
+                              child: ListTile(
+                            title: message['SentBy'].toString() == senderUUID
+                                ? SenderMessageRow(
+                                    key: Key(message.id),
+                                    messageContent: message["Message"])
+                                : RecipientMessageRow(
+                                    key: Key(message.id),
+                                    messageContent: message["Message"]),
+                          ));
+                        }).toList()
+                      : [const SenderMessageRow(messageContent: "Ne obstaja")],
+                );
+              })
           // ],
           // ),
           ),

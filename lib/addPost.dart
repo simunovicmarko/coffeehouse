@@ -1,6 +1,8 @@
+// ignore_for_file: file_names
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffeehouse/post.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -9,16 +11,37 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:random_string/random_string.dart';
 
 class AddPost extends StatefulWidget {
-  const AddPost({Key? key}) : super(key: key);
+  const AddPost({Key? key, this.userId}) : super(key: key);
 
+  final String? userId;
   @override
   _AddPostState createState() => _AddPostState();
 }
 
 class _AddPostState extends State<AddPost> {
-  @override
   String imageLink =
       "https://erestaurantconsulting.ca/wp-content/uploads/2019/04/Restaurant-Performance-Measurement-1080x675.jpg";
+
+  File? newImageFile;
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+
+  int rating = 1;
+
+  void addPostToFirebase() {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    Map<String, dynamic> postMap = {
+      "userId": uid,
+      "title": titleController.text,
+      "description": descriptionController.text,
+      "location": locationController.text,
+      "rating": rating,
+      "imageLink": imageLink
+    };
+    FirebaseFirestore.instance.collection('Posts').add(postMap);
+  }
 
   Future<bool> checkPermissions() async {
     await Permission.photos.request();
@@ -31,7 +54,7 @@ class _AddPostState extends State<AddPost> {
   Future<void> uploadPhotoToFirebaseStorage(File file) async {
     final FirebaseStorage storage = FirebaseStorage.instance;
     TaskSnapshot snapshot =
-        await storage.ref().child("posts/$randomAlpha(12)").putFile(file);
+        await storage.ref().child("posts/" + randomAlpha(12)).putFile(file);
 
     String downloadUrl = await snapshot.ref.getDownloadURL();
 
@@ -48,26 +71,46 @@ class _AddPostState extends State<AddPost> {
 
       if (image != null) {
         File file = File(image.path);
+        setState(() {
+          newImageFile = file;
+        });
         uploadPhotoToFirebaseStorage(file);
-      } else {
-        print("null");
       }
     }
   }
 
+  ImageProvider<Object> decidePhoto() {
+    if (newImageFile == null) {
+      return NetworkImage(imageLink);
+    }
+    return FileImage(newImageFile!);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(children: [
-      Center(
-        child: IconButton(
-            onPressed: () {
-              pickImage();
-            },
-            icon: const Icon(
-              Icons.photo_camera_back_rounded,
-              color: Colors.white,
-              size: 50,
-            )),
+    return Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+              onPressed: () {
+                pickImage();
+              },
+              icon: const Icon(
+                Icons.photo_camera_back_rounded,
+                color: Colors.white,
+                size: 50,
+              )),
+          IconButton(
+              onPressed: () {
+                addPostToFirebase();
+              },
+              icon: const Icon(
+                Icons.post_add,
+                color: Colors.white,
+                size: 50,
+              )),
+        ],
       ),
       AspectRatio(
         // aspectRatio: 16 / 9,
@@ -79,31 +122,29 @@ class _AddPostState extends State<AddPost> {
           decoration: BoxDecoration(
             image: DecorationImage(
               alignment: FractionalOffset.topCenter,
-              image: NetworkImage(imageLink),
+              // image: NetworkImage(imageLink),
+              image: decidePhoto(),
               fit: BoxFit.fitWidth,
             ),
           ),
         ),
       ),
-      const Padding(
-        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: InputField(
-          hintText: "Add title",
-        ),
-      ),
-      const Padding(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: InputField(
-          hintText: "Add description...",
-        ),
-      ),
+      Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child:
+              InputField(hintText: "Add title", controller: titleController)),
+      Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: InputField(
+              hintText: "Add description...",
+              controller: descriptionController)),
       Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: Row(children: [
-          const SizedBox(
-            width: 300,
-            child: InputField(hintText: "Add location"),
-          ),
+          SizedBox(
+              width: 300,
+              child: InputField(
+                  hintText: "Add location", controller: locationController)),
           Container(
             alignment: Alignment.center,
             child: IconButton(
@@ -116,20 +157,28 @@ class _AddPostState extends State<AddPost> {
           )
         ]),
       ),
-      Beans(),
-    ]));
+      Beans(
+        rating: rating,
+        setRating: (rating) {
+          this.rating = rating;
+        },
+      ),
+    ]);
   }
 }
 
 class InputField extends StatelessWidget {
-  const InputField({Key? key, required this.hintText}) : super(key: key);
+  const InputField({Key? key, required this.hintText, required this.controller})
+      : super(key: key);
 
-  final hintText;
+  final String hintText;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       // controller: emailController,
+      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: Colors.white),
@@ -145,20 +194,29 @@ class InputField extends StatelessWidget {
   }
 }
 
-class Beans extends StatelessWidget {
-  const Beans({
-    Key? key,
-  }) : super(key: key);
+class Beans extends StatefulWidget {
+  const Beans({Key? key, this.setRating, this.rating = 3}) : super(key: key);
+
+  final int rating;
+  final Function(int)? setRating;
+
+  @override
+  State<Beans> createState() => _BeansState();
+}
+
+class _BeansState extends State<Beans> {
+  // int rating = 1;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(5.0),
       child: Ratings(
-        beanSize: 40,
-        widtFactor: 1.0,
-        isButton: true,
-      ),
+          beanSize: 40,
+          widtFactor: 1.0,
+          isButton: true,
+          rating: widget.rating,
+          setRating: widget.setRating),
     );
   }
 }

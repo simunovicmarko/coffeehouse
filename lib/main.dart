@@ -1,13 +1,16 @@
 import 'package:coffeehouse/addPost.dart';
 import 'package:coffeehouse/auth_service.dart';
-import 'package:coffeehouse/chat.dart';
+// import 'package:coffeehouse/chat.dart';
 import 'package:coffeehouse/login.dart';
 import 'package:coffeehouse/navbar.dart';
 import 'package:coffeehouse/post_list.dart';
+// import 'package:coffeehouse/post_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'chat.dart';
 // import 'post.dart';
 
 Future<void> main() async {
@@ -30,7 +33,7 @@ class _MojAppState extends State<MojApp> {
   String title = "CoffeeHouse";
 
   @override
-  Widget build(BuildContext) {
+  Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
@@ -62,7 +65,8 @@ class AuthenticationWrapper extends StatelessWidget {
     if (firebaseuser != null) {
       // firebaseuser.updateDisplayName("User1");
       // return const Chat();
-      return const AddPost();
+      // return const AddPost();
+      return const PostList();
     }
     return const Login();
   }

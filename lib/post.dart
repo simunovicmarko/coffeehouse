@@ -4,7 +4,22 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 class Post extends StatefulWidget {
-  const Post({Key? key}) : super(key: key);
+  const Post(
+      {Key? key,
+      this.userId,
+      this.title,
+      this.description,
+      this.location,
+      this.rating,
+      this.imageLink})
+      : super(key: key);
+
+  final String? userId;
+  final String? title;
+  final String? description;
+  final String? location;
+  final int? rating;
+  final String? imageLink;
 
   @override
   _PostState createState() => _PostState();
@@ -16,7 +31,7 @@ class _PostState extends State<Post> {
   String imageLink =
       "https://erestaurantconsulting.ca/wp-content/uploads/2019/04/Restaurant-Performance-Measurement-1080x675.jpg";
 
-  String postName = "Bob's coffee";
+  String postTitle = "Bob's coffee";
   double beanSize = 30;
   double ratingMargin = 10;
   double mainMargin = 5;
@@ -27,8 +42,17 @@ class _PostState extends State<Post> {
 
   String apiKey = "AIzaSyA2fzQ7U_Kisoh4JCPjmIFKxGmVCIh9OKQ";
 
+  void init() {
+    //  widget.userId
+    setState(() {
+      imageLink = widget.imageLink ?? imageLink;
+      postTitle = widget.title ?? postTitle;
+      rating = widget.rating ?? rating;
+    });
+  }
+
   Future<LocationData> getLocation() async {
-    Location location = new Location();
+    Location location = Location();
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -58,21 +82,10 @@ class _PostState extends State<Post> {
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&key=$apiKey'));
   }
 
-  Future<String> getCityName() async {
-    try {
-      LocationData locationData = await getLocation();
-
-      http.Response geoCoding =
-          await fetchGeocoding(locationData.latitude, locationData.longitude);
-
-      print(geoCoding.body);
-    } catch (e) {}
-    return '';
-  }
-
   @override
   Widget build(BuildContext context) {
     // getCityName();
+    init();
     return Wrap(children: [
       Container(
           color: postBgColor,
@@ -80,11 +93,23 @@ class _PostState extends State<Post> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Image(image: NetworkImage(imageLink)),
+              // Image(image: NetworkImage(imageLink))
+              AspectRatio(
+                aspectRatio: 12 / 8,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      alignment: FractionalOffset.topCenter,
+                      image: NetworkImage(imageLink),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                ),
+              ),
               Container(
                 margin: postMargins,
                 child: Text(
-                  postName,
+                  postTitle,
                   style: TextStyle(
                       fontSize: fontSize,
                       color: Colors.white,
@@ -106,6 +131,7 @@ class Ratings extends StatefulWidget {
       this.rating = 1,
       this.beanSize = 30,
       this.widtFactor = 0.6,
+      this.setRating,
       this.isButton = false})
       : super(key: key);
 
@@ -113,6 +139,8 @@ class Ratings extends StatefulWidget {
   final double beanSize;
   final double widtFactor;
   final bool isButton;
+  final Function(int)? setRating;
+
   @override
   State<Ratings> createState() => _RatingsState();
 }
@@ -126,6 +154,10 @@ class _RatingsState extends State<Ratings> {
 
   void getBeans({void Function()? onPressed}) {
     // rating = rating != widget.rating ? widget.rating : rating;
+
+    setState(() {
+      rating = widget.rating;
+    });
     beanChildren.clear();
     for (var i = 0; i < 5; i++) {
       beanChildren.add(
@@ -136,6 +168,7 @@ class _RatingsState extends State<Ratings> {
                   onPressed: () {
                     setState(() {
                       rating = i;
+                      widget.setRating != null ? widget.setRating!(i) : null;
                     });
                   },
                   icon: SvgPicture.asset(
@@ -148,7 +181,7 @@ class _RatingsState extends State<Ratings> {
                 )
               : SvgPicture.asset(
                   'assets/score-bean.svg',
-                  color: i < rating ? Colors.black : Colors.white,
+                  color: i <= rating ? Colors.black : Colors.white,
                   width: widget.beanSize,
                   height: widget.beanSize,
                 ),
