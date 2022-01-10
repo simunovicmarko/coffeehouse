@@ -1,4 +1,5 @@
 import 'package:coffeehouse/auth_service.dart';
+import 'package:coffeehouse/chatList.dart';
 import 'package:coffeehouse/login.dart';
 import 'package:coffeehouse/navbar.dart';
 import 'package:coffeehouse/post_list.dart';
@@ -14,7 +15,9 @@ Future<void> main() async {
 }
 
 class MojApp extends StatefulWidget {
-  const MojApp({Key? key}) : super(key: key);
+  const MojApp({Key? key, this.inputWidget}) : super(key: key);
+
+  final Widget? inputWidget;
 
   @override
   State<MojApp> createState() => _MojAppState();
@@ -84,6 +87,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseuser = context.watch<User?>();
     if (firebaseuser != null) {
+      // return widget;
       return widget;
     }
     return const Login();
