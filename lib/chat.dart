@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
 class Chat extends StatefulWidget {
-  const Chat({Key? key}) : super(key: key);
+  const Chat({Key? key, required this.recipientId}) : super(key: key);
+
+  final String recipientId;
 
   @override
   _ChatState createState() => _ChatState();
@@ -44,53 +46,87 @@ class _ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
+    recipientUUID = widget.recipientId;
     getDocumentIdWithBothUsersAsync();
-    return Stack(children: [
-      Container(
-          margin: const EdgeInsets.fromLTRB(0, 0, 0, 60),
-          child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('Chat')
-                  .doc(chatId)
-                  .collection('Messages')
-                  .orderBy('SentAt', descending: true)
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                return ListView(
-                  reverse: true,
-                  children: getMessages(snapshot),
-                );
-              })
-          // ],
-          // ),
-          ),
-      Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          alignment: Alignment.bottomCenter,
-          height: 50,
-          child: TextField(
-            controller: messageController,
-            decoration: InputDecoration(
-                hintText: "Type your message",
-                hintStyle: const TextStyle(color: Colors.white),
-                filled: true,
-                contentPadding: const EdgeInsets.all(16),
-                fillColor: const Color(0xFF865243),
-                suffixIcon: IconButton(
-                    // onPressed: sendMessage(messageController.text.trim()),
-                    onPressed: () {
-                      sendMessage(messageController.text.trim());
-                    },
-                    icon: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                    ))),
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    ]);
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
+              title: const Text("Coffehouse"),
+              centerTitle: true,
+              backgroundColor: const Color(0xFFB14D32),
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 40,
+                  )),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: IconButton(
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      icon: const Icon(
+                        Icons.logout,
+                        size: 40,
+                      )),
+                )
+              ],
+            ),
+            body: Center(
+              child: Stack(children: [
+                Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 60),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('Chat')
+                            .doc(chatId)
+                            .collection('Messages')
+                            .orderBy('SentAt', descending: true)
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          return ListView(
+                            reverse: true,
+                            children: getMessages(snapshot),
+                          );
+                        })
+                    // ],
+                    // ),
+                    ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    height: 50,
+                    child: TextField(
+                      controller: messageController,
+                      decoration: InputDecoration(
+                          hintText: "Type your message",
+                          hintStyle: const TextStyle(color: Colors.white),
+                          filled: true,
+                          contentPadding: const EdgeInsets.all(16),
+                          fillColor: const Color(0xFF865243),
+                          suffixIcon: IconButton(
+                              // onPressed: sendMessage(messageController.text.trim()),
+                              onPressed: () {
+                                sendMessage(messageController.text.trim());
+                              },
+                              icon: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                              ))),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+            backgroundColor: const Color(0xFFDB8A74)));
   }
 
   Future<void Function()?> sendMessage(String message) async {
