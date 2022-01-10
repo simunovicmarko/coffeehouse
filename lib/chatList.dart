@@ -24,7 +24,7 @@ class ChatList extends StatefulWidget {
                   ? snapshot.data!.docs.map((user) {
                       if (user.id != FirebaseAuth.instance.currentUser!.uid) {
                         // return Text(user['name'] + " " + user['surname']);
-                        return userRow(
+                        return UserRow(
                           id: user.id,
                           name: user['name'],
                           surname: user['surname'],

@@ -1,5 +1,4 @@
 import 'package:coffeehouse/auth_service.dart';
-import 'package:coffeehouse/chatList.dart';
 import 'package:coffeehouse/login.dart';
 import 'package:coffeehouse/navbar.dart';
 import 'package:coffeehouse/post_list.dart';
@@ -87,7 +86,6 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseuser = context.watch<User?>();
     if (firebaseuser != null) {
-      // return widget;
       return widget;
     }
     return const Login();

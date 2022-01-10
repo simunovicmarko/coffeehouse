@@ -98,85 +98,87 @@ class _AddPostState extends State<AddPost> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-              onPressed: () {
-                pickImage();
-              },
-              icon: const Icon(
-                Icons.photo_camera_back_rounded,
-                color: Colors.white,
-                size: 50,
-              )),
-          IconButton(
-              onPressed: () {
-                addPostToFirebase();
-              },
-              icon: const Icon(
-                // Icons.post_add,
-                Icons.upload,
-                color: Colors.white,
-                size: 50,
-              )),
-        ],
-      ),
-      AspectRatio(
-        // aspectRatio: 16 / 9,
-        aspectRatio: 12 / 8,
-        child: Container(
-          // width: double.infinity,
-          // height: 250,
-          margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              alignment: FractionalOffset.topCenter,
-              // image: NetworkImage(imageLink),
-              image: decidePhoto(),
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-        ),
-      ),
-      Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-          child:
-              InputField(hintText: "Add title", controller: titleController)),
-      Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-          child: InputField(
-              hintText: "Add description...",
-              controller: descriptionController)),
-      Container(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: Row(children: [
-          SizedBox(
-              width: 300,
-              child: InputField(
-                  hintText: "Add location", controller: locationController)),
-          Container(
-            alignment: Alignment.center,
-            child: IconButton(
-                onPressed: () {},
+    return SingleChildScrollView(
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+                onPressed: () {
+                  pickImage();
+                },
                 icon: const Icon(
-                  Icons.add_location_rounded,
+                  Icons.photo_camera_back_rounded,
                   color: Colors.white,
                   size: 50,
                 )),
-          )
-        ]),
-      ),
-      Beans(
-        rating: rating,
-        setRating: (rating) {
-          setState(() {
-            this.rating = rating;
-          });
-        },
-      ),
-    ]);
+            IconButton(
+                onPressed: () {
+                  addPostToFirebase();
+                },
+                icon: const Icon(
+                  // Icons.post_add,
+                  Icons.upload,
+                  color: Colors.white,
+                  size: 50,
+                )),
+          ],
+        ),
+        AspectRatio(
+          // aspectRatio: 16 / 9,
+          aspectRatio: 12 / 8,
+          child: Container(
+            // width: double.infinity,
+            // height: 250,
+            margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                alignment: FractionalOffset.topCenter,
+                // image: NetworkImage(imageLink),
+                image: decidePhoto(),
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child:
+                InputField(hintText: "Add title", controller: titleController)),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: InputField(
+                hintText: "Add description...",
+                controller: descriptionController)),
+        Container(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: Row(children: [
+            SizedBox(
+                width: 300,
+                child: InputField(
+                    hintText: "Add location", controller: locationController)),
+            Container(
+              alignment: Alignment.center,
+              child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.add_location_rounded,
+                    color: Colors.white,
+                    size: 50,
+                  )),
+            )
+          ]),
+        ),
+        Beans(
+          rating: rating,
+          setRating: (rating) {
+            setState(() {
+              this.rating = rating;
+            });
+          },
+        ),
+      ]),
+    );
   }
 }
 

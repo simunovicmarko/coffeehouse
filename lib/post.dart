@@ -78,18 +78,38 @@ class _PostState extends State<Post> {
                 margin: postMargins,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
-                  child: Text(
-                    postTitle,
-                    style: TextStyle(
-                        fontSize: fontSize,
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        postTitle,
+                        style: TextStyle(
+                            fontSize: fontSize,
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      widget.location != null && widget.location!.isNotEmpty
+                          ? Column(
+                              children: [
+                                const Icon(
+                                  Icons.location_pin,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  widget.location!,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                )
+                              ],
+                            )
+                          : Container()
+                    ],
                   ),
                 ),
               ),
               Ratings(
                 rating: rating,
-              )
+              ),
             ],
           )),
     ]);

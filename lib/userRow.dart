@@ -1,9 +1,8 @@
 import 'package:coffeehouse/chat.dart';
-import 'package:coffeehouse/main.dart';
 import 'package:flutter/material.dart';
 
-class userRow extends StatelessWidget {
-  const userRow(
+class UserRow extends StatelessWidget {
+  const UserRow(
       {Key? key,
       this.id = "",
       this.name = "Jon",
