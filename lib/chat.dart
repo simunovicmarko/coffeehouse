@@ -14,42 +14,51 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   String recipientUUID = "qsIMPBjaV6PSU40Lm77izWlNgU72";
   String senderUUID = FirebaseAuth.instance.currentUser!.uid;
+  String chatId = "aaa";
 
-  String messageContent =
-      "Lorem ipsum neiofsbflsfgasfmčgfčgdsfničsfgdneiofsbflsfgasfmčgfčgdsfničsfgd";
+  String messageContent = "Lorem ipsum";
 
   final TextEditingController messageController = TextEditingController();
 
+  List<Widget> getMessages(AsyncSnapshot<QuerySnapshot> snapshot) {
+    var messages = snapshot.data != null && snapshot.data!.docs.isNotEmpty
+        ? snapshot.data!.docs.map((message) {
+            return Center(
+                child: ListTile(
+              title: message['SentBy'].toString() == senderUUID
+                  ? SenderMessageRow(
+                      key: Key(message.id), messageContent: message["Message"])
+                  : RecipientMessageRow(
+                      key: Key(message.id), messageContent: message["Message"]),
+            ));
+          }).toList()
+        : [
+            const Center(
+                child: CircularProgressIndicator(
+              color: Color(0xFFF839AF),
+            ))
+          ];
+
+    return messages;
+  }
+
   @override
   Widget build(BuildContext context) {
+    getDocumentIdWithBothUsersAsync();
     return Stack(children: [
       Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 60),
           child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('Chat')
-                  .doc("Pp3cNzZJ9TebUWrqGmkj")
+                  .doc(chatId)
                   .collection('Messages')
-                  .orderBy('id', descending: true)
+                  .orderBy('SentAt', descending: true)
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 return ListView(
                   reverse: true,
-                  children: snapshot.data != null &&
-                          snapshot.data!.docs.isNotEmpty
-                      ? snapshot.data!.docs.map((message) {
-                          return Center(
-                              child: ListTile(
-                            title: message['SentBy'].toString() == senderUUID
-                                ? SenderMessageRow(
-                                    key: Key(message.id),
-                                    messageContent: message["Message"])
-                                : RecipientMessageRow(
-                                    key: Key(message.id),
-                                    messageContent: message["Message"]),
-                          ));
-                        }).toList()
-                      : [const SenderMessageRow(messageContent: "Ne obstaja")],
+                  children: getMessages(snapshot),
                 );
               })
           // ],
@@ -92,7 +101,7 @@ class _ChatState extends State<Chat> {
         "SentAt": DateTime.now(),
       };
 
-      String docID = await getDocumentIdWithBothUsers();
+      String docID = await getDocumentIdWithBothUsersAsync();
       await addMessage(docID, messageInfoMap);
     }
   }
@@ -125,9 +134,9 @@ class _ChatState extends State<Chat> {
     return chat;
   }
 
-  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> temp(
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getMessagesWithAutoId(
       BuildContext context) async {
-    String id = await getDocumentIdWithBothUsers();
+    String id = await getDocumentIdWithBothUsersAsync();
 
     Stream<QuerySnapshot<Map<String, dynamic>>> messagesSnapshot =
         FirebaseFirestore.instance
@@ -136,24 +145,6 @@ class _ChatState extends State<Chat> {
             .collection('Messages')
             .snapshots();
     return messagesSnapshot;
-    // return StreamBuilder(
-    //     stream: messagesSnapshot,
-    //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    //       return ListView(
-    //         children: snapshot.data != null
-    //             ? snapshot.data!.docs.map((message) {
-    //                 return Center(
-    //                     child: ListTile(
-    //                   title: Text(message['SentAt']),
-    //                 ));
-    //               }).toList()
-    //             : [],
-    //       );
-    //     });
-
-    // Stream messages = await chatReference.collection('Messages').snapshots();
-
-    // chatReference.snapshots();
   }
 
   Widget buildList(
@@ -174,22 +165,31 @@ class _ChatState extends State<Chat> {
         });
   }
 
-  Future<String> getDocumentIdWithBothUsers() async {
-    QuerySnapshot chat = await FirebaseFirestore.instance
+  Future<String> getDocumentIdWithBothUsersAsync() async {
+    QuerySnapshot<Map<String, dynamic>> chat = await FirebaseFirestore.instance
         .collection("Chat")
         .where('Members', arrayContainsAny: [senderUUID]).get();
 
-    QuerySnapshot chat2 = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> chat2 = await FirebaseFirestore.instance
         .collection("Chat")
         .where('Members', arrayContainsAny: [recipientUUID]).get();
 
     String docID = randomAlphaNumeric(12);
     for (var doc in chat.docs) {
+      bool escape = false;
       for (var doc2 in chat2.docs) {
         if (doc.id == doc2.id) {
           docID = doc.id;
+          escape = true;
+          break;
         }
+        if (escape) break;
       }
+    }
+    if (chatId != docID) {
+      setState(() {
+        chatId = docID;
+      });
     }
     return docID;
   }

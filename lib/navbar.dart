@@ -1,4 +1,5 @@
 import 'package:coffeehouse/addPost.dart';
+import 'package:coffeehouse/chat.dart';
 import 'package:coffeehouse/post_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -45,7 +46,9 @@ class _NavBarState extends State<NavBar> {
               iconSize: 50,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                widget.setWidget(const Chat());
+              },
               icon: SvgPicture.asset(
                 'assets/PaperPlane.svg',
                 color: Colors.white,

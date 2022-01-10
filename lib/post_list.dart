@@ -6,25 +6,32 @@ class PostList extends StatelessWidget {
   const PostList({Key? key}) : super(key: key);
 
   Widget getPosts(BuildContext context) {
-    Stream<QuerySnapshot<Map<String, dynamic>>> posts =
-        FirebaseFirestore.instance.collection("Posts").snapshots();
+    Stream<QuerySnapshot<Map<String, dynamic>>> posts = FirebaseFirestore
+        .instance
+        .collection("Posts")
+        .orderBy("createdAt", descending: true)
+        .snapshots();
 
     Widget postList = StreamBuilder(
         stream: posts,
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          return ListView(
-            children: snapshot.data != null && snapshot.data!.docs.isNotEmpty
-                ? snapshot.data!.docs.map((post) {
-                    // return Text(post['userId'].toString());
-                    return Post(
-                      userId: post['userId'],
-                      title: post['title'],
-                      imageLink: post['imageLink'],
-                      location: post['location'],
-                      rating: post['rating'],
-                    );
-                  }).toList()
-                : [const Text("skdljf")],
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ListView(
+              // reverse: true,
+              children: snapshot.data != null && snapshot.data!.docs.isNotEmpty
+                  ? snapshot.data!.docs.map((post) {
+                      return Post(
+                        key: Key(post.id),
+                        userId: post['userId'],
+                        title: post['title'],
+                        imageLink: post['imageLink'],
+                        location: post['location'],
+                        rating: post['rating'],
+                      );
+                    }).toList()
+                  : [const Center(child: CircularProgressIndicator())],
+            ),
           );
         });
 
@@ -34,8 +41,5 @@ class PostList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return getPosts(context);
-    // ListView(
-    //   children: const [Post(), Post(), Post(), Post(), Post()],
-    // );
   }
 }

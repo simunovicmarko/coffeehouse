@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffeehouse/main.dart';
 import 'package:coffeehouse/post.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -40,10 +41,16 @@ class _AddPostState extends State<AddPost> {
         "description": descriptionController.text,
         "location": locationController.text,
         "rating": rating,
-        "imageLink": imageLink
+        "imageLink": imageLink,
+        "createdAt": DateTime.now()
       };
-      FirebaseFirestore.instance.collection('Posts').add(postMap);
+      FirebaseFirestore.instance.collection('Posts').add(postMap).then(
+          (value) => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const MojApp())));
+      return;
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Izpolnite vsa zahtevana polja")));
   }
 
   Future<bool> checkPermissions() async {
@@ -109,7 +116,8 @@ class _AddPostState extends State<AddPost> {
                 addPostToFirebase();
               },
               icon: const Icon(
-                Icons.post_add,
+                // Icons.post_add,
+                Icons.upload,
                 color: Colors.white,
                 size: 50,
               )),
@@ -163,7 +171,9 @@ class _AddPostState extends State<AddPost> {
       Beans(
         rating: rating,
         setRating: (rating) {
-          this.rating = rating;
+          setState(() {
+            this.rating = rating;
+          });
         },
       ),
     ]);

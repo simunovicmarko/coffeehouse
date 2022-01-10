@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
 
 class Post extends StatefulWidget {
   const Post(
@@ -51,41 +49,11 @@ class _PostState extends State<Post> {
     });
   }
 
-  Future<LocationData> getLocation() async {
-    Location location = Location();
-
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) return Future.error("Could not get location");
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return Future.error("Could not get location");
-      }
-    }
-
-    _locationData = await location.getLocation();
-
-    return _locationData;
-  }
-
-  Future<http.Response> fetchGeocoding(double? lat, double? lon) {
-    return http.get(Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&key=$apiKey'));
-  }
-
   @override
   Widget build(BuildContext context) {
     // getCityName();
     init();
+
     return Wrap(children: [
       Container(
           color: postBgColor,
@@ -108,12 +76,15 @@ class _PostState extends State<Post> {
               ),
               Container(
                 margin: postMargins,
-                child: Text(
-                  postTitle,
-                  style: TextStyle(
-                      fontSize: fontSize,
-                      color: Colors.white,
-                      fontWeight: FontWeight.normal),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: Text(
+                    postTitle,
+                    style: TextStyle(
+                        fontSize: fontSize,
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal),
+                  ),
                 ),
               ),
               Ratings(

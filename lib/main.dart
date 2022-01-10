@@ -46,6 +46,20 @@ class _MojAppState extends State<MojApp> {
               appBar: AppBar(
                 title: Text(title),
                 centerTitle: true,
+                backgroundColor: const Color(0xFFB14D32),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: IconButton(
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut();
+                        },
+                        icon: const Icon(
+                          Icons.logout,
+                          size: 40,
+                        )),
+                  )
+                ],
               ),
               body: Center(child: AuthenticationWrapper(widget: displayWidget)),
               bottomNavigationBar: NavBar(
@@ -70,14 +84,6 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseuser = context.watch<User?>();
     if (firebaseuser != null) {
-      // switch (index) {
-      //   case 0:
-      //     return const PostList();
-      //   case 1:
-      //     return const AddPost();
-      //   case 2:
-      //     return const Chat();
-      // }
       return widget;
     }
     return const Login();
