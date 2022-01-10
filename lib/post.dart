@@ -62,63 +62,78 @@ class _PostState extends State<Post> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // Image(image: NetworkImage(imageLink))
-              AspectRatio(
-                aspectRatio: 12 / 8,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      alignment: FractionalOffset.topCenter,
-                      image: NetworkImage(imageLink),
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: postMargins,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        postTitle,
-                        style: const TextStyle(
-                            fontSize: 32,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      widget.location != null && widget.location!.isNotEmpty
-                          ? Column(
-                              children: [
-                                const Icon(
-                                  Icons.location_pin,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  widget.location!,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 18),
-                                )
-                              ],
-                            )
-                          : Container()
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
-                  child: Text(
-                    widget.description ?? "",
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
-                  )),
+              photo(),
+              titleRow(),
+              description(),
               Ratings(
                 rating: rating,
               ),
             ],
           )),
     ]);
+  }
+
+  Container description() {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+        child: Text(
+          widget.description ?? "",
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ));
+  }
+
+  Container titleRow() {
+    return Container(
+      margin: postMargins,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [title(), loaction()],
+        ),
+      ),
+    );
+  }
+
+  Text title() {
+    return Text(
+      postTitle,
+      style: const TextStyle(
+          fontSize: 32, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget loaction() {
+    return widget.location != null && widget.location!.isNotEmpty
+        ? Column(
+            children: [
+              const Icon(
+                Icons.location_pin,
+                color: Colors.white,
+                size: 32,
+              ),
+              Text(
+                widget.location!,
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+              )
+            ],
+          )
+        : Container();
+  }
+
+  AspectRatio photo() {
+    return AspectRatio(
+      aspectRatio: 12 / 8,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            alignment: FractionalOffset.topCenter,
+            image: NetworkImage(imageLink),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -124,23 +124,7 @@ class _AddPostState extends State<AddPost> {
                 )),
           ],
         ),
-        AspectRatio(
-          // aspectRatio: 16 / 9,
-          aspectRatio: 12 / 8,
-          child: Container(
-            // width: double.infinity,
-            // height: 250,
-            margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                alignment: FractionalOffset.topCenter,
-                // image: NetworkImage(imageLink),
-                image: decidePhoto(),
-                fit: BoxFit.fitWidth,
-              ),
-            ),
-          ),
-        ),
+        photo(),
         Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child:
@@ -150,25 +134,7 @@ class _AddPostState extends State<AddPost> {
             child: InputField(
                 hintText: "Add description...",
                 controller: descriptionController)),
-        Container(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-          child: Row(children: [
-            SizedBox(
-                width: 300,
-                child: InputField(
-                    hintText: "Add location", controller: locationController)),
-            Container(
-              alignment: Alignment.center,
-              child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.add_location_rounded,
-                    color: Colors.white,
-                    size: 50,
-                  )),
-            )
-          ]),
-        ),
+        addLocation(),
         Beans(
           rating: rating,
           setRating: (rating) {
@@ -178,6 +144,48 @@ class _AddPostState extends State<AddPost> {
           },
         ),
       ]),
+    );
+  }
+
+  Container addLocation() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: Row(children: [
+        SizedBox(
+            width: 300,
+            child: InputField(
+                hintText: "Add location", controller: locationController)),
+        Container(
+          alignment: Alignment.center,
+          child: IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.add_location_rounded,
+                color: Colors.white,
+                size: 50,
+              )),
+        )
+      ]),
+    );
+  }
+
+  AspectRatio photo() {
+    return AspectRatio(
+      // aspectRatio: 16 / 9,
+      aspectRatio: 12 / 8,
+      child: Container(
+        // width: double.infinity,
+        // height: 250,
+        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            alignment: FractionalOffset.topCenter,
+            // image: NetworkImage(imageLink),
+            image: decidePhoto(),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      ),
     );
   }
 }
