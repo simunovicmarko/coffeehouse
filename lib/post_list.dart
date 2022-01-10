@@ -18,7 +18,6 @@ class PostList extends StatelessWidget {
           return Align(
             alignment: Alignment.topCenter,
             child: ListView(
-              // reverse: true,
               children: snapshot.data != null && snapshot.data!.docs.isNotEmpty
                   ? snapshot.data!.docs.map((post) {
                       return Post(
@@ -28,6 +27,7 @@ class PostList extends StatelessWidget {
                         imageLink: post['imageLink'],
                         location: post['location'],
                         rating: post['rating'],
+                        description: post['description'],
                       );
                     }).toList()
                   : [const Center(child: CircularProgressIndicator())],

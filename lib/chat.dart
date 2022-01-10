@@ -5,9 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
 class Chat extends StatefulWidget {
-  const Chat({Key? key, required this.recipientId}) : super(key: key);
+  const Chat(
+      {Key? key,
+      required this.recipientId,
+      this.name = "Jon Doe",
+      this.photo =
+          "https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Foriginal%2F000%2F032%2F558%2Ftemp6.jpg"})
+      : super(key: key);
 
   final String recipientId;
+  final String name;
+  final String photo;
 
   @override
   _ChatState createState() => _ChatState();
@@ -98,6 +106,31 @@ class _ChatState extends State<Chat> {
                     // ],
                     // ),
                     ),
+                Container(
+                  color: const Color(0xFFAD6B55),
+                  padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: Image(image: NetworkImage(widget.photo))),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        child: Text(
+                          widget.name,
+                          style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -162,6 +195,8 @@ class _ChatState extends State<Chat> {
           .collection('Messages')
           .add(messageInfoMap);
     }
+
+    messageController.text = "";
   }
 
   Future<DocumentSnapshot<Object?>> getChatById(String docID) async {

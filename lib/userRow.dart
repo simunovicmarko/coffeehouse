@@ -24,8 +24,14 @@ class UserRow extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Chat(recipientId: id)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Chat(
+                        recipientId: id,
+                        name: "$name $surname",
+                        photo: profilePicture,
+                      )));
         },
         style: ButtonStyle(
             backgroundColor:

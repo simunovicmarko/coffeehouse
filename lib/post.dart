@@ -77,16 +77,16 @@ class _PostState extends State<Post> {
               Container(
                 margin: postMargins,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         postTitle,
-                        style: TextStyle(
-                            fontSize: fontSize,
+                        style: const TextStyle(
+                            fontSize: 32,
                             color: Colors.white,
-                            fontWeight: FontWeight.normal),
+                            fontWeight: FontWeight.bold),
                       ),
                       widget.location != null && widget.location!.isNotEmpty
                           ? Column(
@@ -107,6 +107,12 @@ class _PostState extends State<Post> {
                   ),
                 ),
               ),
+              Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: Text(
+                    widget.description ?? "",
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  )),
               Ratings(
                 rating: rating,
               ),
