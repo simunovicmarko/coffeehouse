@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffeehouse/messageRow.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:random_string/random_string.dart';
 
 class Chat extends StatefulWidget {
@@ -31,23 +32,27 @@ class _ChatState extends State<Chat> {
   final TextEditingController messageController = TextEditingController();
 
   List<Widget> getMessages(AsyncSnapshot<QuerySnapshot> snapshot) {
-    var messages = snapshot.data != null && snapshot.data!.docs.isNotEmpty
-        ? snapshot.data!.docs.map((message) {
-            return Center(
-                child: ListTile(
-              title: message['SentBy'].toString() == senderUUID
-                  ? SenderMessageRow(
-                      key: Key(message.id), messageContent: message["Message"])
-                  : RecipientMessageRow(
-                      key: Key(message.id), messageContent: message["Message"]),
-            ));
-          }).toList()
-        : [
-            const Center(
-                child: CircularProgressIndicator(
-              color: Color(0xFFF839AF),
-            ))
-          ];
+    List<Widget> messages =
+        snapshot.data != null && snapshot.data!.docs.isNotEmpty
+            ? snapshot.data!.docs.map((message) {
+                return Center(
+                    child: ListTile(
+                  title: message['SentBy'].toString() == senderUUID
+                      ? SenderMessageRow(
+                          key: Key(message.id),
+                          messageContent: message["Message"])
+                      : RecipientMessageRow(
+                          key: Key(message.id),
+                          messageContent: message["Message"]),
+                ));
+              }).toList()
+            : [
+                // const Center(
+                //     child: CircularProgressIndicator(
+                //   color: Color(0xFFF839AF),
+                // ))
+                Container()
+              ];
 
     return messages;
   }
@@ -96,23 +101,20 @@ class _ChatState extends State<Chat> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 40,
-          )),
+          icon: const Icon(Icons.arrow_back)),
       actions: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: IconButton(
+            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+            child: IconButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
               },
-              icon: const Icon(
-                Icons.logout,
-                size: 40,
-              )),
-        )
+              icon: SvgPicture.asset(
+                'assets/Logo.svg',
+                color: Colors.white,
+              ),
+              iconSize: 50.0,
+            ))
       ],
     );
   }

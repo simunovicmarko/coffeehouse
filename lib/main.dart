@@ -5,6 +5,7 @@ import 'package:coffeehouse/post_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -53,13 +54,20 @@ class _MojAppState extends State<MojApp> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                     child: IconButton(
-                        onPressed: () {
-                          FirebaseAuth.instance.signOut();
-                        },
-                        icon: const Icon(
-                          Icons.logout,
-                          size: 40,
-                        )),
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      icon: SvgPicture.asset(
+                        'assets/Logo.svg',
+                        color: Colors.white,
+                      ),
+                      iconSize: 50.0,
+                    ),
+
+                    // icon: const Icon(
+                    //   Icons.logout,
+                    //   size: 40,
+                    // )),
                   )
                 ],
               ),
